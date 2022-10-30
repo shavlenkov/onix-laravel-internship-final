@@ -30,7 +30,10 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        return ProductResource::collection(Product::searchByCategoryIds($request->query('category_ids'))->simplePaginate(config('app.paginate')));
+        return ProductResource::collection(
+            Product::searchByCategoryIds($request->query('category_ids'))
+                ->sortByRating()
+                ->simplePaginate(config('app.paginate')));
     }
 
     /**
