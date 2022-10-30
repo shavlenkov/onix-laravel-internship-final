@@ -33,11 +33,11 @@ class OrderPolicy
     }
 
     public function update(User $user, Order $order) {
-        return $user->isAdmin() && $user->id == $order->user_id;
+        return $user->isAdmin() || ($user->isUser() && $user->id == $order->user_id);
     }
 
     public function delete(User $user, Order $order) {
-        return $user->isAdmin() && $user->id == $order->user_id;
+        return $user->isAdmin() || ($user->isUser() && $user->id == $orde->user_id);
     }
 
 }
