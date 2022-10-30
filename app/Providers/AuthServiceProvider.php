@@ -26,6 +26,9 @@ use App\Policies\OrderPolicy;
 use App\Models\Cart;
 use App\Policies\CartPolicy;
 
+use App\Models\Review;
+use App\Policies\ReviewPolicy;
+
 class AuthServiceProvider extends ServiceProvider
 {
     /**
@@ -41,6 +44,7 @@ class AuthServiceProvider extends ServiceProvider
         Answer::class => AnswerPolicy::class,
         Order::class => OrderPolicy::class,
         Cart::class => CartPolicy::class,
+        Review::class => ReviewPolicy::class,
     ];
 
     /**
