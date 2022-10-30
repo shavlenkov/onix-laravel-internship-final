@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\QuestionController;
 use App\Http\Controllers\Api\AnswerController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\ReviewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,6 +45,7 @@ Route::apiResource('products', ProductController::class)->middleware('auth:sanct
 Route::apiResource('categories', CategoryController::class)->middleware('auth:sanctum');
 Route::apiResource('questions', QuestionController::class)->middleware('auth:sanctum');
 Route::apiResource('orders', OrderController::class)->middleware('auth:sanctum');
+Route::apiResource('reviews', ReviewController::class)->middleware('auth:sanctum');
 
 Route::get('/products/{product}/questions', [ProductController::class, 'getQuestions'])->middleware('auth:sanctum');
 
