@@ -28,6 +28,14 @@ class Product extends Model
         });
     }
 
+    public function scopeSortByRating($query) {
+        return $query->withAvg('reviews as rating', 'rating')->orderBy('rating', 'DESC');
+    }
+
+    public function reviews() {
+        return $this->hasMany(Review::class, 'product_id');
+    }
+
     public function image() {
         return $this->hasOne(ProductImage::class, 'product_id');
     }
@@ -39,5 +47,7 @@ class Product extends Model
     public function categories() {
         return $this->belongsToMany(Category::class, 'product_categories', 'product_id', 'category_id');
     }
+
+
 
 }
