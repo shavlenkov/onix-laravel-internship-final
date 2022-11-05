@@ -6,14 +6,19 @@ use App\Http\Controllers\Controller;
 
 use App\Models\Answer;
 use App\Http\Requests\StoreUpdateAnswerRequest;
+use App\Services\AnswerService;
 
 class AnswerController extends Controller
 {
+
+    protected $answerService;
+
     /**
      * AnswerController constructor.
      */
     public function __construct()
     {
+        $this->answerService = new AnswerService();
         $this->authorizeResource(Answer::class, 'answer');
     }
 
@@ -28,15 +33,11 @@ class AnswerController extends Controller
     {
         $data = $request->validated();
 
-        $data['user_id'] = auth()->user()->id;
-        $data['question_id'] = $id;
-
-        $answer = Answer::create($data);
+        $this->answerService->createAnswer($data, $id);
 
         return response()
             ->json(['success' => true]);
     }
-
 
     /**
      * Update the specified resource in storage.
@@ -49,8 +50,7 @@ class AnswerController extends Controller
     {
         $data = $request->validated();
 
-        $answer->text = $data['text'];
-        $answer->save();
+        $this->answerService->updateAnswer($data, $answer);
 
         return response()
             ->json(['success' => true]);
