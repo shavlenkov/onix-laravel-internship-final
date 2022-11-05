@@ -6,19 +6,24 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreUpdateProductRequest;
+
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\QuestionResource;
 use App\Models\Product;
-use App\Models\Category;
+
+use App\Services\ProductService;
 
 class ProductController extends Controller
 {
+
+    protected $productService;
 
     /**
      * ProductController constructor.
      */
     public function __construct()
     {
+        $this->productService = new ProductService();
         $this->authorizeResource(Product::class, 'product');
     }
 
@@ -30,10 +35,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        return ProductResource::collection(
-            Product::searchByCategoryIds($request->query('category_ids'))
-                ->sortByRating()
-                ->simplePaginate(config('app.paginate')));
+        return $this->productService->getProducts($request->query('category_ids'));
     }
 
     /**
@@ -46,20 +48,7 @@ class ProductController extends Controller
     {
         $data = $request->validated();
 
-        $product = Product::create($data);
-
-        if(!empty($data['image'])) {
-            $image = $data['image'];
-            $path = $image->store('images');
-
-            $product->image()->create([
-                'filename' => $path,
-            ]);
-        }
-
-        $category = Category::find($data['category_ids']);
-
-        $product->categories()->attach($category);
+        $this->productService->createProduct($data);
 
         return response()
             ->json(['success' => true]);
@@ -87,11 +76,7 @@ class ProductController extends Controller
     {
         $data = $request->validated();
 
-        $product->name = $data['name'];
-        $product->description = $data['description'];
-        $product->in_stock = $data['in_stock'];
-
-        $product->save();
+        $this->productService->updateProduct($data, $product);
 
         return response()
             ->json(['success' => true]);
