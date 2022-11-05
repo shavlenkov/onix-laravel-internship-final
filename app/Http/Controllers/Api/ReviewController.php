@@ -10,14 +10,19 @@ use App\Http\Requests\StoreReviewRequest;
 use App\Http\Requests\UpdateReviewRequest;
 use App\Http\Resources\ReviewResource;
 
+use App\Services\ReviewService;
+
 class ReviewController extends Controller
 {
+
+    protected $reviewService;
 
     /**
      * ReviewController constructor.
      */
     public function __construct()
     {
+        $this->reviewService = new ReviewService();
         $this->authorizeResource(Review::class, 'review');
     }
 
@@ -28,7 +33,7 @@ class ReviewController extends Controller
      */
     public function index(Request $request)
     {
-        return ReviewResource::collection(Review::searchByProductId($request->query('product_id'))->simplePaginate(config('app.paginate')));
+        return $this->reviewService->getReviews($request->query('product_id'));
     }
 
     /**
@@ -41,9 +46,7 @@ class ReviewController extends Controller
     {
         $data = $request->validated();
 
-        $data['user_id'] = auth()->user()->id;
-
-        $review = Review::create($data);
+        $this->reviewService->createReview($data);
 
         return response()
             ->json(['success' => true]);
@@ -71,9 +74,7 @@ class ReviewController extends Controller
     {
         $data = $request->validated();
 
-        $review->text = $data['text'];
-        $review->rating = $data['rating'];
-        $review->save();
+        $this->reviewService->updateReview($data, $review);
 
         return response()
             ->json(['success' => true]);
