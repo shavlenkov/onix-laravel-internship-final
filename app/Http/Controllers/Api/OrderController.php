@@ -8,16 +8,20 @@ use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
-use App\Models\Product;
+
+use App\Services\OrderService;
 
 class OrderController extends Controller
 {
+
+    protected $orderService;
 
     /**
      * OrderController constructor.
      */
     public function __construct()
     {
+        $this->orderService = new OrderService();
         $this->authorizeResource(Order::class, 'order');
     }
 
@@ -41,17 +45,7 @@ class OrderController extends Controller
     {
         $data = $request->validated();
 
-        $data['user_id'] = auth()->user()->id;
-        $data['address'] = auth()->user()->address;
-        $data['status'] = 0;
-
-        $order = Order::create($data);
-
-        $order->item()->create([
-            'product_id' => $data['product_id'],
-            'quantity' => $data['quantity'],
-            'price' => Product::find($data['product_id'])->price * $data['quantity']
-        ]);
+        $this->orderService->createOrder($data);
 
         return response()
             ->json(['success' => true]);
@@ -79,14 +73,7 @@ class OrderController extends Controller
     {
         $data = $request->validated();
 
-        $order->comment = $data['comment'];
-
-        $order->item()->update([
-            'quantity' => $data['quantity'],
-            'price' => $order->item->product->price * $data['quantity']
-        ]);
-
-        $order->save();
+        $this->orderService->updateOrder($data, $order);
 
         return response()
             ->json(['success' => true]);
