@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 
 use App\Http\Resources\QuestionResource;
 use App\Models\Question;
+use App\Services\QuestionService;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreQuestionRequest;
 use App\Http\Requests\UpdateQuestionRequest;
@@ -13,11 +14,14 @@ use App\Http\Requests\UpdateQuestionRequest;
 class QuestionController extends Controller
 {
 
+    protected $questionService;
+
     /**
      * QuestionController constructor.
      */
     public function __construct()
     {
+        $this->questionService = new QuestionService();
         $this->authorizeResource(Question::class, 'question');
     }
 
@@ -29,7 +33,7 @@ class QuestionController extends Controller
      */
     public function index(Request $request)
     {
-        return QuestionResource::collection(Question::searchByProductId($request->query('product_id'))->simplePaginate(config('app.paginate')));
+        return $this->questionService->getQuestion($request->query('product_id'));
     }
 
     /**
@@ -42,9 +46,7 @@ class QuestionController extends Controller
     {
         $data = $request->validated();
 
-        $data['user_id'] = auth()->user()->id;
-
-        $question = Question::create($data);
+        $this->questionService->createQuestion($data);
 
         return response()
             ->json(['success' => true]);
@@ -72,8 +74,7 @@ class QuestionController extends Controller
     {
         $data = $request->validated();
 
-        $question->text = $data['text'];
-        $question->save();
+        $this->questionService->updateQuestion($data, $question);
 
         return response()
             ->json(['success' => true]);
