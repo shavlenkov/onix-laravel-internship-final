@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUpdateCategoryRequest;
 use App\Models\Category;
 use App\Http\Resources\CategoryResource;
+use App\Services\CategoryService;
 
 class CategoryController extends Controller
 {
@@ -16,6 +17,7 @@ class CategoryController extends Controller
      */
     public function __construct()
     {
+        $this->categoryService = new CategoryService();
         $this->authorizeResource(Category::class, 'category');
     }
 
@@ -67,10 +69,7 @@ class CategoryController extends Controller
     {
         $data = $request->validated();
 
-        $category->name = $data['name'];
-        $category->description = $data['description'];
-
-        $category->save();
+        $this->categoryService->updateCategory($data, $category);
 
         return response()
             ->json(['success' => true]);
