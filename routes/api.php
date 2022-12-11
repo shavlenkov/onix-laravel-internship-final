@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\AnswerController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,3 +60,7 @@ Route::prefix('cart')->middleware('auth:sanctum')->group(function() {
     Route::delete('/', [CartController::class, 'deleteAll']);
     Route::delete('/{cart}', [CartController::class, 'deleteOne']);
 });
+
+Route::get('/payments', [PaymentController::class, 'index'])->middleware('auth:sanctum');
+Route::get('/payments/{payment}', [PaymentController::class, 'show'])->middleware('auth:sanctum');
+Route::post('/pay', [PaymentController::class, 'pay'])->middleware('auth:sanctum');
