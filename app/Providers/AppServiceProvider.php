@@ -12,6 +12,10 @@ use App\Services\AnswerService;
 use App\Services\OrderService;
 use App\Services\CartService;
 use App\Services\ReviewService;
+use App\Services\PaymentService;
+
+use Laravel\Cashier\Cashier;
+use App\Models\User;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -41,17 +45,21 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AnswerService::class, function ($app) {
             return new AnswerService();
         });
-        
+
         $this->app->bind(OrderService::class, function ($app) {
             return new OrderService();
         });
-        
+
         $this->app->bind(CartService::class, function ($app) {
             return new CartService();
         });
 
         $this->app->bind(ReviewService::class, function ($app) {
             return new ReviewService();
+        });
+
+        $this->app->bind(PaymentService::class, function ($app) {
+            return new PaymentService();
         });
     }
 
@@ -62,6 +70,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Cashier::useCustomerModel(User::class);
     }
 }
