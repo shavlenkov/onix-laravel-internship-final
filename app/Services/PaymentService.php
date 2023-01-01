@@ -6,11 +6,13 @@ namespace App\Services;
 use App\Models\Payment;
 use App\Models\Order;
 
+use App\Events\OrderStatusUpdated;
+
 class PaymentService
 {
     public function createPay(int $order_id) {
 
-        $order = Order::find($order_id);
+        $order = Order::findOrFail($order_id);
 
         $price = $order->item->price * 100;
 
@@ -32,7 +34,11 @@ class PaymentService
         if($payment->status == 1) {
             $order->item->product->decrement('in_stock', $order->item->quantity);
 
-            $order->delete();
+            $order->update([
+                'status' => 1
+            ]);
+
+            event(new OrderStatusUpdated($order));
         }
 
         return $payment;

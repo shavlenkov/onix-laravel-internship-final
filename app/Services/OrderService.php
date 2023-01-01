@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Order;
 use App\Models\Product;
 
+use App\Events\OrderCreated;
+
 class OrderService
 {
     public function createOrder(array $data)
@@ -24,8 +26,10 @@ class OrderService
         $order->item()->create([
             'product_id' => $product_id,
             'quantity' => $quantity,
-            'price' => Product::find($product_id)->price * $quantity
+            'price' => Product::findOrFail($product_id)->price * $quantity
         ]);
+
+        event(new OrderCreated($order));
     }
 
     public function updateOrder(array $data, Order $order)
