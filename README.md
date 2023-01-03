@@ -20,6 +20,13 @@ DB_DATABASE=
 DB_USERNAME=
 DB_PASSWORD=
 ```
+
+```
+STRIPE_KEY=
+STRIPE_SECRET=
+CASHIER_CURRENCY=usd
+PAYMENT_ID=
+```
 4. Перейти до папки onix-laravel-internship-final: 
 
     `cd onix-laravel-internship-final`
